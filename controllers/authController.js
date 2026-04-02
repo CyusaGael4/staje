@@ -1,14 +1,11 @@
-// Register new user
 const register = async (req, res) => {
     try {
         const { username, password, email, fullName } = req.body;
 
-        // Validate input
         if (!username || !password) {
             return res.status(400).json({ message: 'Username and password are required' });
         }
 
-        // Check if user exists
         const [existing] = await promisePool.query(
             'SELECT userId FROM User WHERE username = ?',
             [username]
@@ -18,11 +15,9 @@ const register = async (req, res) => {
             return res.status(400).json({ message: 'Username already exists' });
         }
 
-        // Hash password with proper salt rounds
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // Insert user
         const [result] = await promisePool.query(
             'INSERT INTO User (username, password, email, fullName) VALUES (?, ?, ?, ?)',
             [username, hashedPassword, email || null, fullName || null]
@@ -39,7 +34,7 @@ const register = async (req, res) => {
     }
 };
 
-// Login user - Fix the password comparison
+
 const login = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -48,7 +43,6 @@ const login = async (req, res) => {
             return res.status(400).json({ message: 'Username and password are required' });
         }
 
-        // Get user
         const [users] = await promisePool.query(
             'SELECT * FROM User WHERE username = ?',
             [username]
@@ -60,14 +54,12 @@ const login = async (req, res) => {
 
         const user = users[0];
 
-        // Check password - Make sure to use await
         const validPassword = await bcrypt.compare(password, user.password);
         
         if (!validPassword) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate token
         const token = jwt.sign(
             { userId: user.userId, username: user.username },
             process.env.JWT_SECRET || 'crpms_secret_key_2025',
