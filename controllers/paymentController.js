@@ -1,6 +1,5 @@
 const { promisePool } = require('../config/database');
 
-// Create Payment
 const createPayment = async (req, res) => {
     try {
         const { AmountPaid, PaymentDate, RecordNumber, PlateNumber } = req.body;
@@ -21,7 +20,7 @@ const createPayment = async (req, res) => {
     }
 };
 
-// Get all Payments
+
 const getAllPayments = async (req, res) => {
     try {
         const [payments] = await promisePool.query(`
@@ -42,7 +41,6 @@ const getAllPayments = async (req, res) => {
     }
 };
 
-// Get Payment by ID
 const getPaymentById = async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -69,7 +67,6 @@ const getPaymentById = async (req, res) => {
     }
 };
 
-// Update Payment
 const updatePayment = async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -91,7 +88,6 @@ const updatePayment = async (req, res) => {
     }
 };
 
-// Delete Payment
 const deletePayment = async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -111,7 +107,7 @@ const deletePayment = async (req, res) => {
     }
 };
 
-// Generate Bill
+
 const generateBill = async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -139,7 +135,7 @@ const generateBill = async (req, res) => {
     }
 };
 
-// Generate Daily Report
+
 const generateDailyReport = async (req, res) => {
     try {
         const { date } = req.params;
