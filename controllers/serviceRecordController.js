@@ -1,11 +1,9 @@
 const { promisePool } = require('../config/database');
 
-// Create Service Record (INSERT)
 const createServiceRecord = async (req, res) => {
     try {
         const { ServiceDate, PlateNumber, ServiceCode } = req.body;
 
-        // Check if car exists
         const [car] = await promisePool.query(
             'SELECT PlateNumber FROM Car WHERE PlateNumber = ?',
             [PlateNumber]
@@ -15,7 +13,6 @@ const createServiceRecord = async (req, res) => {
             return res.status(400).json({ message: 'Car not found' });
         }
 
-        // Check if service exists
         const [service] = await promisePool.query(
             'SELECT ServiceCode FROM Services WHERE ServiceCode = ?',
             [ServiceCode]
@@ -41,7 +38,6 @@ const createServiceRecord = async (req, res) => {
     }
 };
 
-// Get all Service Records (RETRIEVE)
 const getAllServiceRecords = async (req, res) => {
     try {
         const [records] = await promisePool.query(`
@@ -60,7 +56,6 @@ const getAllServiceRecords = async (req, res) => {
     }
 };
 
-// Get Service Record by Record Number
 const getServiceRecordById = async (req, res) => {
     try {
         const { recordNumber } = req.params;
@@ -85,7 +80,6 @@ const getServiceRecordById = async (req, res) => {
     }
 };
 
-// Update Service Record (UPDATE)
 const updateServiceRecord = async (req, res) => {
     try {
         const { recordNumber } = req.params;
@@ -107,7 +101,6 @@ const updateServiceRecord = async (req, res) => {
     }
 };
 
-// Delete Service Record (DELETE)
 const deleteServiceRecord = async (req, res) => {
     try {
         const { recordNumber } = req.params;
