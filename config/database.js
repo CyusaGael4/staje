@@ -15,7 +15,6 @@ const pool = mysql.createPool({
 
 const promisePool = pool.promise();
 
-// Test connection
 const testConnection = async () => {
     try {
         const connection = await promisePool.getConnection();
