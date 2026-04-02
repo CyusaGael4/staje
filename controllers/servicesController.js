@@ -1,11 +1,9 @@
 const { promisePool } = require('../config/database');
 
-// Create Service
 const createService = async (req, res) => {
     try {
         const { ServiceCode, ServiceName, ServicePrice } = req.body;
 
-        // Check if service exists
         const [existing] = await promisePool.query(
             'SELECT ServiceCode FROM Services WHERE ServiceCode = ?',
             [ServiceCode]
@@ -31,7 +29,6 @@ const createService = async (req, res) => {
     }
 };
 
-// Get all Services
 const getAllServices = async (req, res) => {
     try {
         const [services] = await promisePool.query('SELECT * FROM Services ORDER BY ServiceName');
@@ -42,7 +39,6 @@ const getAllServices = async (req, res) => {
     }
 };
 
-// Get Service by Code
 const getServiceByCode = async (req, res) => {
     try {
         const { serviceCode } = req.params;
@@ -62,7 +58,6 @@ const getServiceByCode = async (req, res) => {
     }
 };
 
-// Update Service
 const updateService = async (req, res) => {
     try {
         const { serviceCode } = req.params;
@@ -84,7 +79,6 @@ const updateService = async (req, res) => {
     }
 };
 
-// Delete Service
 const deleteService = async (req, res) => {
     try {
         const { serviceCode } = req.params;
