@@ -8,11 +8,11 @@ require('dotenv').config();
 const app = express();
 const PORT = 5000;
 
-// Middleware
+
 app.use(cors());
 app.use(express.json());
 
-// MySQL connection
+
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -25,7 +25,6 @@ const pool = mysql.createPool({
 
 const promisePool = pool.promise();
 
-// Authentication middleware
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -43,22 +42,20 @@ const authenticateToken = (req, res, next) => {
     }
 };
 
-// Test database connection
+
 async function testConnection() {
     try {
         const connection = await promisePool.getConnection();
-        console.log('✅ MySQL connected successfully');
+        console.log('MySQL connected successfully');
         connection.release();
         return true;
     } catch (error) {
-        console.error('❌ MySQL connection failed:', error.message);
+        console.error('MySQL connection failed:', error.message);
         return false;
     }
 }
 
-// ==================== AUTHENTICATION ENDPOINTS ====================
 
-// Login endpoint
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -101,12 +98,12 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// Register endpoint
+
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { username, password, email, fullName } = req.body;
         
-        // Check if user exists
+       
         const [existing] = await promisePool.query(
             'SELECT userId FROM User WHERE username = ?',
             [username]
@@ -130,9 +127,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
 });
 
-// ==================== CAR ENDPOINTS (CRUD) ====================
 
-// Create Car - POST
 app.post('/api/cars', authenticateToken, async (req, res) => {
     try {
         const { PlateNumber, type, Model, ManufacturingYear, DriverPhone, MechanicName } = req.body;
@@ -158,7 +153,6 @@ app.post('/api/cars', authenticateToken, async (req, res) => {
     }
 });
 
-// Get all Cars - READ
 app.get('/api/cars', authenticateToken, async (req, res) => {
     try {
         const [cars] = await promisePool.query('SELECT * FROM Car ORDER BY PlateNumber');
@@ -169,7 +163,7 @@ app.get('/api/cars', authenticateToken, async (req, res) => {
     }
 });
 
-// Get single Car - READ
+
 app.get('/api/cars/:plateNumber', authenticateToken, async (req, res) => {
     try {
         const { plateNumber } = req.params;
@@ -186,7 +180,7 @@ app.get('/api/cars/:plateNumber', authenticateToken, async (req, res) => {
     }
 });
 
-// Update Car - UPDATE
+
 app.put('/api/cars/:plateNumber', authenticateToken, async (req, res) => {
     try {
         const { plateNumber } = req.params;
@@ -208,7 +202,7 @@ app.put('/api/cars/:plateNumber', authenticateToken, async (req, res) => {
     }
 });
 
-// Delete Car - DELETE
+
 app.delete('/api/cars/:plateNumber', authenticateToken, async (req, res) => {
     try {
         const { plateNumber } = req.params;
@@ -225,9 +219,7 @@ app.delete('/api/cars/:plateNumber', authenticateToken, async (req, res) => {
     }
 });
 
-// ==================== SERVICES ENDPOINTS (CRUD) ====================
 
-// Create Service - POST
 app.post('/api/services', authenticateToken, async (req, res) => {
     try {
         const { ServiceCode, ServiceName, ServicePrice } = req.body;
@@ -253,7 +245,7 @@ app.post('/api/services', authenticateToken, async (req, res) => {
     }
 });
 
-// Get all Services - READ
+
 app.get('/api/services', authenticateToken, async (req, res) => {
     try {
         const [services] = await promisePool.query('SELECT * FROM Services ORDER BY ServiceName');
@@ -264,7 +256,7 @@ app.get('/api/services', authenticateToken, async (req, res) => {
     }
 });
 
-// Get single Service - READ
+
 app.get('/api/services/:serviceCode', authenticateToken, async (req, res) => {
     try {
         const { serviceCode } = req.params;
@@ -281,7 +273,6 @@ app.get('/api/services/:serviceCode', authenticateToken, async (req, res) => {
     }
 });
 
-// Update Service - UPDATE
 app.put('/api/services/:serviceCode', authenticateToken, async (req, res) => {
     try {
         const { serviceCode } = req.params;
@@ -303,7 +294,6 @@ app.put('/api/services/:serviceCode', authenticateToken, async (req, res) => {
     }
 });
 
-// Delete Service - DELETE
 app.delete('/api/services/:serviceCode', authenticateToken, async (req, res) => {
     try {
         const { serviceCode } = req.params;
@@ -320,20 +310,16 @@ app.delete('/api/services/:serviceCode', authenticateToken, async (req, res) => 
     }
 });
 
-// ==================== SERVICE RECORD ENDPOINTS (CRUD) ====================
-
-// Create Service Record - POST (INSERT)
 app.post('/api/service-records', authenticateToken, async (req, res) => {
     try {
         const { ServiceDate, PlateNumber, ServiceCode } = req.body;
 
-        // Check if car exists
+      
         const [car] = await promisePool.query('SELECT PlateNumber FROM Car WHERE PlateNumber = ?', [PlateNumber]);
         if (car.length === 0) {
             return res.status(400).json({ message: 'Car not found' });
         }
 
-        // Check if service exists
         const [service] = await promisePool.query('SELECT ServiceCode FROM Services WHERE ServiceCode = ?', [ServiceCode]);
         if (service.length === 0) {
             return res.status(400).json({ message: 'Service not found' });
@@ -351,7 +337,7 @@ app.post('/api/service-records', authenticateToken, async (req, res) => {
     }
 });
 
-// Get all Service Records - READ (RETRIEVE)
+
 app.get('/api/service-records', authenticateToken, async (req, res) => {
     try {
         const [records] = await promisePool.query(`
@@ -370,7 +356,7 @@ app.get('/api/service-records', authenticateToken, async (req, res) => {
     }
 });
 
-// Get single Service Record - READ
+
 app.get('/api/service-records/:recordNumber', authenticateToken, async (req, res) => {
     try {
         const { recordNumber } = req.params;
@@ -395,7 +381,7 @@ app.get('/api/service-records/:recordNumber', authenticateToken, async (req, res
     }
 });
 
-// Update Service Record - UPDATE
+
 app.put('/api/service-records/:recordNumber', authenticateToken, async (req, res) => {
     try {
         const { recordNumber } = req.params;
@@ -417,7 +403,7 @@ app.put('/api/service-records/:recordNumber', authenticateToken, async (req, res
     }
 });
 
-// Delete Service Record - DELETE
+
 app.delete('/api/service-records/:recordNumber', authenticateToken, async (req, res) => {
     try {
         const { recordNumber } = req.params;
@@ -434,9 +420,7 @@ app.delete('/api/service-records/:recordNumber', authenticateToken, async (req, 
     }
 });
 
-// ==================== PAYMENT ENDPOINTS ====================
 
-// Create Payment - POST
 app.post('/api/payments', authenticateToken, async (req, res) => {
     try {
         const { AmountPaid, PaymentDate, RecordNumber, PlateNumber } = req.body;
@@ -453,7 +437,7 @@ app.post('/api/payments', authenticateToken, async (req, res) => {
     }
 });
 
-// Get all Payments - READ
+
 app.get('/api/payments', authenticateToken, async (req, res) => {
     try {
         const [payments] = await promisePool.query(`
@@ -474,7 +458,7 @@ app.get('/api/payments', authenticateToken, async (req, res) => {
     }
 });
 
-// Get single Payment - READ
+
 app.get('/api/payments/:paymentNumber', authenticateToken, async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -501,7 +485,7 @@ app.get('/api/payments/:paymentNumber', authenticateToken, async (req, res) => {
     }
 });
 
-// Generate Bill - GET
+
 app.get('/api/payments/bill/:paymentNumber', authenticateToken, async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -528,7 +512,7 @@ app.get('/api/payments/bill/:paymentNumber', authenticateToken, async (req, res)
     }
 });
 
-// Generate Daily Report - GET
+
 app.get('/api/payments/report/daily/:date', authenticateToken, async (req, res) => {
     try {
         const { date } = req.params;
@@ -567,7 +551,7 @@ app.get('/api/payments/report/daily/:date', authenticateToken, async (req, res) 
     }
 });
 
-// Update Payment - PUT
+
 app.put('/api/payments/:paymentNumber', authenticateToken, async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -589,7 +573,7 @@ app.put('/api/payments/:paymentNumber', authenticateToken, async (req, res) => {
     }
 });
 
-// Delete Payment - DELETE
+
 app.delete('/api/payments/:paymentNumber', authenticateToken, async (req, res) => {
     try {
         const { paymentNumber } = req.params;
@@ -606,13 +590,13 @@ app.delete('/api/payments/:paymentNumber', authenticateToken, async (req, res) =
     }
 });
 
-// Test endpoint
+
 app.get('/', (req, res) => {
     res.json({ message: 'CRPMS API is running' });
 });
 
-// Start server
+
 app.listen(PORT, async () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
     await testConnection();
 });
