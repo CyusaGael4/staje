@@ -1,11 +1,9 @@
 const { promisePool } = require('../config/database');
 
-// Create Car
 const createCar = async (req, res) => {
     try {
         const { PlateNumber, type, Model, ManufacturingYear, DriverPhone, MechanicName } = req.body;
 
-        // Check if car exists
         const [existing] = await promisePool.query(
             'SELECT PlateNumber FROM Car WHERE PlateNumber = ?',
             [PlateNumber]
@@ -31,7 +29,6 @@ const createCar = async (req, res) => {
     }
 };
 
-// Get all Cars
 const getAllCars = async (req, res) => {
     try {
         const [cars] = await promisePool.query('SELECT * FROM Car ORDER BY PlateNumber');
@@ -42,7 +39,6 @@ const getAllCars = async (req, res) => {
     }
 };
 
-// Get Car by Plate Number
 const getCarByPlate = async (req, res) => {
     try {
         const { plateNumber } = req.params;
@@ -62,7 +58,6 @@ const getCarByPlate = async (req, res) => {
     }
 };
 
-// Update Car
 const updateCar = async (req, res) => {
     try {
         const { plateNumber } = req.params;
@@ -84,7 +79,6 @@ const updateCar = async (req, res) => {
     }
 };
 
-// Delete Car
 const deleteCar = async (req, res) => {
     try {
         const { plateNumber } = req.params;
